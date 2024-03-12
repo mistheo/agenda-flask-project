@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agenda</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+  }
+
+  header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    text-align: center;
+  }
+
+  nav {
+    background-color: #444;
+    padding: 10px;
+  }
+
+  nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+  }
+
+  nav ul li {
+    display: inline;
+    margin-right: 20px;
+  }
+
+  section {
+    padding: 20px;
+    margin: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  h2 {
+    color: #333;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  input[type="text"],
+  input[type="date"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+
+  input[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  input[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  table, th, td {
+    border: 1px solid #ccc;
+  }
+
+  th, td {
+    padding: 8px;
+    text-align: left;
+  }
+
+</style>
+</head>
+<body>
+  <header>
+    <h1>Agenda</h1>
+  </header>
+
+  <section id="next-date">
+    <h2>Prochaine Date</h2>
+    <!-- Insérez ici le code pour afficher la prochaine date -->
+  </section>
+
+  <section id="add-event">
+    <h2>Ajout d'une Date</h2>
+    <form action="#" method="post">
+      <label for="event-name">Nom de l'événement:</label>
+      <input type="text" id="event-name" name="event-name" required>
+      <label for="event-date">Date de l'événement:</label>
+      <input type="date" id="event-date" name="event-date" required>
+      <input type="submit" value="Ajouter">
+    </form>
+  </section>
+
+  <section id="event-recap">
+    <h2>Récapitulatif des vos Dates</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Nom de l'événement</th>
+          <th>Date de l'événement</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Insérez ici le code pour afficher le récapitulatif des dates -->
+      </tbody>
+    </table>
+  </section>
+
+</body>
+</html>
