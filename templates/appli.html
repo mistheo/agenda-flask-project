@@ -4,12 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Agenda</title>
+<script src="./static/js/main.js" defer></script>
 <style>
   body {
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;
     margin: 0;
     padding: 0;
+    
   }
 
   header {
@@ -63,7 +65,7 @@
     box-sizing: border-box;
   }
 
-  input[type="submit"] {
+  input[type="submit"], button {
     background-color: #007bff;
     color: #fff;
     border: none;
@@ -73,7 +75,7 @@
     transition: background-color 0.3s;
   }
 
-  input[type="submit"]:hover {
+  input[type="submit"]:hover, button:hover {
     background-color: #0056b3;
   }
 
@@ -91,6 +93,40 @@
     text-align: left;
   }
 
+  .hidden {
+    display: none !important;
+  }
+
+  #add-date{
+    position: relative;
+    z-index: 2;
+  }
+
+  #btn-close-popup {
+    display: flex;
+    right: auto;
+  }
+
+  #next-date {
+    display: flex;
+    align-items: center;
+    justify-content:space-between;
+  }
+
+  .overlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+    z-index: 1;
+  }
+  
+  
 </style>
 </head>
 <body>
@@ -98,20 +134,25 @@
     <h1>Agenda</h1>
   </header>
 
-  <section id="next-date">
-    <h2>Prochaine Date</h2>
-    <!-- Insérez ici le code pour afficher la prochaine date -->
-  </section>
-
-  <section id="add-event">
+  <section id="add-date" class="hidden" style="z-index: 2;">
     <h2>Ajout d'une Date</h2>
-    <form action="#" method="post">
+    <form action="/newDate" method="post">
       <label for="event-name">Nom de l'événement:</label>
       <input type="text" id="event-name" name="event-name" required>
       <label for="event-date">Date de l'événement:</label>
       <input type="date" id="event-date" name="event-date" required>
+      <br>
+      <br>
       <input type="submit" value="Ajouter">
     </form>
+  </section>
+
+  <div class="overlay hidden"></div>
+
+  <section id="next-date">
+    <h2>Prochaine Date</h2>
+    <!-- Insérez ici le code pour afficher la prochaine date -->
+    <button id="btn-show-popup">+</button>
   </section>
 
   <section id="event-recap">
