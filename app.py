@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, url_for, redirect, session
 from markupsafe import escape
 from datetime import timedelta
+import sqlite3 as sql
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'  # Clé secrète pour le chiffrement du cookie de session
@@ -26,8 +27,10 @@ def connectToApplication():
     user = request.form["username"]
     password = request.form["password"]
 
-    print(f"'{user}' : '{password}'")
-    if user == "test" and password == "123":
+    isUserAllowed = isUserPasswordExist(user,password)
+    print(f"'{isUserAllowed}'")
+    
+    if isUserAllowed[0]:
         session['logged_in'] = True
         return redirect(url_for('loadToApplication'))
     else:
@@ -46,3 +49,15 @@ def loadToApplication():
 def logout():
     session.pop('logged_in', None)
     return redirect(url_for('displayIndexPage'))
+
+
+
+def isUserPasswordExist(username,password):
+    con = sql.connect("projet.db")
+    cur = con.cursor()
+    reponse = cur.execute(f"SELECT * FROM user WHERE username like '{username}' and passwordUser like {password};").fetchone()
+    con.close()
+    if reponse:
+        return True, reponse
+    else:
+        return False, reponse

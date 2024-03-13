@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS user;
 -- Création de la table 'type_account'
 CREATE TABLE type_account (
     ID INT PRIMARY KEY,
+    
     label TEXT NOT NULL
 );
 
@@ -39,7 +40,7 @@ INSERT INTO type_account (ID, label) VALUES
 INSERT INTO user (ID, username, passwordUser, nickname, type_user) VALUES
 (1, 'alice', '123', 'Alice', 1),
 (2, 'bob', '456', 'Bob', 2),
-(3, 'charlie', '789', 'Charlie', 1),
+(3, 'charlie', '789', 'Maman', 1),
 (4, 'admin', 'adminpass', 'Admin', 3);
 
 -- Insertion des données dans la table 'events'
