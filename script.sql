@@ -5,14 +5,13 @@ DROP TABLE IF EXISTS user;
 
 -- Création de la table 'type_account'
 CREATE TABLE type_account (
-    ID INT PRIMARY KEY,
-    
+    ID INTEGER PRIMARY KEY,
     label TEXT NOT NULL
 );
 
 -- Création de la table 'user'
 CREATE TABLE user (
-    ID INT PRIMARY KEY,
+    ID INTEGER PRIMARY KEY,
     username TEXT NOT NULL,
     passwordUser TEXT NOT NULL,
     nickname TEXT NOT NULL,
@@ -22,7 +21,7 @@ CREATE TABLE user (
 
 -- Création de la table 'events'
 CREATE TABLE events (
-    ID INT PRIMARY KEY,
+    ID INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
     description TEXT NOT NULL,
     dateevents DATE NOT NULL DEFAULT '0000-00-00',
@@ -41,7 +40,7 @@ INSERT INTO user (ID, username, passwordUser, nickname, type_user) VALUES
 (1, 'alice', '123', 'Alice', 1),
 (2, 'bob', '456', 'Bob', 2),
 (3, 'charlie', '789', 'Maman', 1),
-(4, 'admin', 'adminpass', 'Admin', 3);
+(4, 'admin', 'adminpass', 'Theo (ADMIN)', 3);
 
 -- Insertion des données dans la table 'events'
 INSERT INTO events (ID, name, description, dateevents, createdBy) VALUES

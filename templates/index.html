@@ -37,15 +37,31 @@
     transition: color 0.3s;
   }
 
+  .login-link {
+    text-decoration: none;
+    color: #007bff; /* Link color */
+    transition: color 0.3s;
+  }
+
+  .login-register {
+    text-decoration: none;
+    color: #28a745; /* Link color */
+    transition: color 0.3s;
+  }
+
   .login-link:hover {
     color: #0056b3; /* Link hover color */
+  }
+
+  .login-register:hover {
+    color: #238b3b; /* Link hover color */
   }
 </style>
 </head>
 <body>
   <div class="content">
     <h1>Bienvenue sur la page index du projet</h1>
-    <p><a class="login-link" href="/login">Login</a> pour continuer.</p>
+    <p><a class="login-link" href="/login">Login</a> ou <a class="login-register" href="/register">s'enregistrer</a> pour continuer.</p>
   </div>
 </body>
 </html>

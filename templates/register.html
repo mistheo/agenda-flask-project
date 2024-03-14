@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login</title>
+  <title>Register</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -18,7 +18,7 @@
       height: 100vh;
     }
 
-    .login-container {
+    .register-container {
       background-color: #222;
       /* Darker container background */
       border-radius: 8px;
@@ -30,14 +30,14 @@
       text-align: center;
     }
 
-    .login-container h2 {
+    .register-container h2 {
       margin-bottom: 20px;
       color: #fff;
       /* Text color */
     }
 
-    .login-container input[type="text"],
-    .login-container input[type="password"] {
+    .register-container input[type="text"],
+    .register-container input[type="password"] {
       width: calc(100% - 40px);
       padding: 10px;
       margin-bottom: 20px;
@@ -50,8 +50,8 @@
       /* Text color */
     }
 
-    .login-container input[type="submit"] {
-      background-color: #007bff;
+    .register-container input[type="submit"] {
+      background-color: #28a745;
       /* Button color */
       color: #fff;
       border: none;
@@ -61,27 +61,26 @@
       transition: background-color 0.3s;
     }
 
-    .login-container input[type="submit"]:hover {
-      background-color: #0056b3;
+    .register-container input[type="submit"]:hover {
+      background-color: #218838;
       /* Button hover color */
     }
 
     .error-message {
       color: #ff0000;
       margin-top: 10px;
-    }*
-    
+    }
+
     .flex {
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    
-    .flex-submit {
+    .flex-sbumit {
       display: flex;
-      align-items: center;
-      justify-content:space-between;
+      align-content: center;
+      justify-content: space-between;
     }
 
     .invert {
@@ -91,27 +90,33 @@
 </head>
 
 <body>
-  <div class="login-container">
+  <div class="register-container">
     <div class="flex">
-      <h2>Login</h2>
+      <h2>Register</h2>
     </div>
-    {% if failToLog %}
-    <div class="error-message">Votre mot de passe ou votre identifiant est erroné</div>
-    {% endif %}
 
+    {% if errorMsg %}
+    <div class="error-message">
+      {{errorMsg}}
+    </div>
+    {% endif %}
+  
     <br>
-    <form autocomplete="off" action="/connect" method="post">
+    <form autocomplete="off" action="/register/new" method="post">
       <input type="text" name="username" placeholder="Username" required>
+      <br>
+      <input type="text" name="nickname" placeholder="Nickname">
       <br>
       <input type="password" name="password" placeholder="Password" required>
       <br>
+      <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+      <br>
+      <br>
       <div class="flex-submit">
         <a href="/">
-          <svg class="invert" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
-            <path d="M400-80 0-480l400-400 71 71-329 329 329 329-71 71Z" />
-          </svg>
+          <svg class="invert" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M400-80 0-480l400-400 71 71-329 329 329 329-71 71Z" /></svg>
         </a>
-        <input type="submit" value="Login">
+        <input type="submit" value="S'Enregistrer">
       </div>
     </form>
   </div>

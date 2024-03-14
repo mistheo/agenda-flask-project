@@ -2,6 +2,7 @@
 .huskyrc.json
 out
 *.bat
+*.db
 log.log
 **/node_modules
 *.pyc
