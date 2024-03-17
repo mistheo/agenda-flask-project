@@ -1,11 +1,11 @@
+# -*- coding: utf-8 -*-
 from flask import Flask, render_template, request, url_for, redirect, session, g
 from markupsafe import escape
 import locale
 from datetime import datetime, timedelta
 import sqlite3 as sql
 from pathlib import Path
-#from hashlib import encode, hexdigest
-#hashlib.sha256(b"Nobody inspects the spammish repetition").hexdigest()
+import hashlib
 
 # CONSTANT
 DATABASE_PATH = 'projet.db'
@@ -35,9 +35,17 @@ else:
 
 @app.template_filter('datetimeformat')
 def datetimeformat(value, format='%A %d %B'):
-    locale.setlocale(locale.LC_TIME, 'fr_FR.UTF-8')
+    locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8')
     date_obj = datetime.strptime(value, '%Y-%m-%d')
     return date_obj.strftime(format)
+
+# ========= ERROR ==============
+
+@app.errorhandler(404)
+@app.errorhandler(405)
+@app.errorhandler(502)
+def page_not_found(error):
+    return render_template('error.html')
 
 
 # ============= Page Index =============
@@ -88,6 +96,7 @@ def connectToApplication():
     password = request.form["password"]
 
     userData = getUserPasswordDB(user,password)
+    
     if userData:
          isUserAllowed = True
     else:
@@ -109,9 +118,21 @@ def displayApplication():
         nick = session.get('userData')[3]
         userId = session.get('userData')[0]
         
-        events = getEventsByUserDB(userId)       
-                
-        return render_template('appli.html',nickname=nick,eventsList=events)
+        events = getEventsByUserDB(userId)
+        
+        if events and events[0][3] == datetime.today().strftime('%Y-%m-%d'):
+            isEventIsToday = 'today'
+        else:
+            isEventIsToday = 'next'
+            
+        if session.get('userData')[4] >= 2:
+            isMaster = True
+        else:
+            isMaster = False
+        
+        print(isEventIsToday)
+                           
+        return render_template('appli.html',nickname=nick,eventsList=events,isEventIsToday=isEventIsToday,isMasterAccount=isMaster)
     else:
         return redirect(url_for('displayLoginPage'))
 
@@ -203,26 +224,37 @@ def disconnectFromApplication():
     return redirect(url_for('displayIndexPage'))
 
 # ================= DATABASE ==================
-def getUserPasswordDB(username,password):
-    con = sql.connect(DATABASE_PATH)
-    cur = con.cursor()
-    reponse = cur.execute("SELECT * FROM user WHERE username like ? and passwordUser like ?;",[username,password]).fetchone()
-    con.close()
-    
-    return reponse
 
-def addUserPasswordDB(username,password,nickname):
+# Fonction pour hacher le mot de passe
+def hashPassword(password):
+    return hashlib.sha256(password.encode()).hexdigest()
+
+# Modifier la fonction addUserPasswordDB pour hasher le mot de passe
+def addUserPasswordDB(username, password, nickname):
+    encodedPassword = hashPassword(password)
     con = sql.connect(DATABASE_PATH)
     cur = con.cursor()
-    cur.execute('INSERT INTO user (username, passwordUser, nickname, type_user) VALUES (?, ?, ?, 1);',[username,password,nickname]).fetchone()
+    cur.execute('INSERT INTO user (username, passwordUser, nickname, type_user) VALUES (?, ?, ?, 1);', [username, encodedPassword, nickname]).fetchone()
     con.commit()
     con.close()
-    
+
+# Modifier la fonction getUserPasswordDB pour vérifier le mot de passe haché
+def getUserPasswordDB(username, password):
+    con = sql.connect(DATABASE_PATH)
+    cur = con.cursor()
+    reponse = cur.execute("SELECT * FROM user WHERE username like ?;", [username]).fetchone()
+    con.close()
+
+    if reponse:
+        hashedPassword = hashPassword(password)
+        if reponse[2] == hashedPassword:
+            return reponse
+    return None
     
 def getEventsByUserDB(idUser):
     con = sql.connect(DATABASE_PATH)
     cur = con.cursor()
-    reponse = cur.execute("SELECT * FROM events WHERE createdBy=? ORDER BY dateevents DESC;",[idUser]).fetchall()
+    reponse = cur.execute("SELECT * FROM events WHERE createdBy=? ORDER BY dateevents ASC;",[idUser]).fetchall()
     con.close()
     
     return reponse
