@@ -29,6 +29,7 @@ CREATE TABLE events (
     FOREIGN KEY (createdBy) REFERENCES user(ID)
 );
 
+
 -- Insertion des données dans la table 'type_account'
 INSERT INTO type_account (ID, label) VALUES
 (1, 'classic'),

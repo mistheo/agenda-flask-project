@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, url_for, redirect, session, g
 from markupsafe import escape
-from datetime import timedelta
+import locale
+from datetime import datetime, timedelta
 import sqlite3 as sql
 from pathlib import Path
 #from hashlib import encode, hexdigest
@@ -30,7 +31,16 @@ if not db_path.exists():
 else:
     sql.connect(DATABASE_PATH)
 
-# Page Index =============
+# ======= JINJA TEMPLATE ===========
+
+@app.template_filter('datetimeformat')
+def datetimeformat(value, format='%A %d %B'):
+    locale.setlocale(locale.LC_TIME, 'fr_FR.UTF-8')
+    date_obj = datetime.strptime(value, '%Y-%m-%d')
+    return date_obj.strftime(format)
+
+
+# ============= Page Index =============
 @app.route('/')
 def displayIndexPage():
     return render_template('index.html')
@@ -45,7 +55,7 @@ def displayLoginPage():
         return render_template('login.html', failToLog=isError)
 
 @app.route('/register')
-def displayResgisterPage():
+def displayRegisterPage():
     if session.get('logged_in'):
         return redirect(url_for('displayApplication'))
     else:
@@ -60,13 +70,13 @@ def registerToApplication():
     newUserNick = request.form['nickname']
        
     if not(newUserPass == newUserPassConf):
-        return redirect(url_for('displayResgisterPage',errorMsg="Les mots de passe ne sont pas identique"))
-    elif getUserPassword(newUserName,newUserPass):
-        return redirect(url_for('displayResgisterPage',errorMsg="Ce nom d'utilisateur est déja utilisé."))
+        return redirect(url_for('displayRegisterPage',errorMsg="Les mots de passe ne sont pas identique"))
+    elif getUserPasswordDB(newUserName,newUserPass):
+        return redirect(url_for('displayRegisterPage',errorMsg="Ce nom d'utilisateur est déja utilisé."))
     elif newUserNick == "":
         newUserNick = newUserName
             
-    addUserPassword(newUserName,newUserPass,newUserNick)
+    addUserPasswordDB(newUserName,newUserPass,newUserNick)
     return redirect(url_for('displayLoginPage'))
             
             
@@ -77,7 +87,7 @@ def connectToApplication():
     user = request.form["username"]
     password = request.form["password"]
 
-    userData = getUserPassword(user,password)
+    userData = getUserPasswordDB(user,password)
     if userData:
          isUserAllowed = True
     else:
@@ -85,7 +95,7 @@ def connectToApplication():
     
     if isUserAllowed:
         session['logged_in'] = True
-        session['username'] = userData[3]
+        session['userData'] = userData
         
         return redirect(url_for('displayApplication'))
     else:
@@ -96,28 +106,104 @@ def connectToApplication():
 @app.route('/monagenda')
 def displayApplication():
     if session.get('logged_in'):
-        nick = session.get('username')
-        return render_template('appli.html',nickname=nick)
-    else:
-        return redirect(url_for('displayLoginPage'))
-    
-# Deconnexion
-@app.route('/monagenda/addevent')
-def displayApplicationNewEvent():
-    if session.get('logged_in'):
-        nick = session.get('username')
-        return render_template('new_event.html',nickname=nick)
+        nick = session.get('userData')[3]
+        userId = session.get('userData')[0]
+        
+        events = getEventsByUserDB(userId)       
+                
+        return render_template('appli.html',nickname=nick,eventsList=events)
     else:
         return redirect(url_for('displayLoginPage'))
 
+#Modif d'un event deja existant
+@app.route('/monagenda/event/<int:idEvent>',methods=['GET'])
+def displayApplicationModifyEvent(idEvent):
+    if session.get('logged_in'): # si connecter
+        nick = session.get('userData')[3]
+        userId = session.get('userData')[0]
+        
+        event = getEventByIdDB(idEvent)                
+        
+        if event and event[4] == userId: #si la personne conncter a acces à l'event
+            return render_template('recap_event.html',eventName=event[1],eventDesc=event[2],eventDate=event[3],today=datetime.today().strftime('%Y-%m-%d'),nickname=nick,eventMode='M',urlPost="/monagenda/event/modify/"+str(idEvent),idEvent=idEvent)
+        
+    return redirect(url_for('displayLoginPage'))
+
+@app.route('/monagenda/event/modify/<int:idEvent>',methods=['POST'])
+def applicationUpdateEvent(idEvent):
+    if session.get('logged_in'): # si connecter
+        nick = session.get('userData')[3]
+        userId = session.get('userData')[0]
+        
+        eventName = request.form["event-name"]
+        eventDate = request.form["event-date"]
+        eventDesc = request.form["event-desc"]
+    
+        
+        event = getEventByIdDB(idEvent)                
+        if event and event[4] == userId: #si la personne conncter a acces à l'event
+            updateEventByIdDB(idEvent,eventName,eventDesc,eventDate)
+            return redirect(url_for('displayApplication'))
+        
+    return redirect(url_for('displayLoginPage'))
+
+@app.route('/monagenda/event/delete/<int:idEvent>',methods = ['GET'])
+def ApplicationDelEvent(idEvent):
+    if session.get('logged_in'):
+        nick = session.get('userData')[3]
+        userId = session.get('userData')[0]
+        
+        event = getEventByIdDB(idEvent)                
+        if event and event[4] == userId: #si la personne conncter a acces à l'event
+            delEventByIdDB(idEvent)
+            return redirect(url_for('displayApplication'))
+        else:
+            return redirect(url_for('displayApplicationNewEvent',errorMsg="L'événement ne peux pas etre supprimé."))
+    
+    return redirect(url_for('displayLoginPage'))
+
+#Ajout d'un event
+@app.route('/monagenda/event/new',methods = ['GET'])
+def displayApplicationNewEvent():
+    if session.get('logged_in'):
+        nick = session.get('userData')[3]
+        
+        msg = request.args.get('errorMsg')
+        return render_template('recap_event.html',today=datetime.today().strftime('%Y-%m-%d'),errorMsg=msg,nickname=nick,eventMode='A',urlPost="/monagenda/event/new")
+    else:
+        return redirect(url_for('displayLoginPage'))
+
+
+@app.route('/monagenda/event/new',methods = ['POST'])
+def applicationNewEvent():
+    if session.get('logged_in'):
+        nick = session.get('userData')[3]
+        userID = session.get('userData')[0]
+        
+        eventName = request.form["event-name"]
+        eventDate = request.form["event-date"]
+        eventDesc = request.form["event-desc"]
+                
+        #si l'element existe pas, ajouter a la bdd
+        if not getEventDB(eventName,eventDesc,eventDate,userID):
+            addEventDB(eventName,eventDesc,eventDate,userID)
+        else:
+            return redirect(url_for('displayApplicationNewEvent',errorMsg="L'événement existe deja"))
+        
+                
+        return redirect(url_for('displayApplication'))
+    else:
+        return redirect(url_for('displayLoginPage'))
+
+# Deconnexion
 @app.route('/disconnect')
 def disconnectFromApplication():
     session.pop('logged_in', None)
     session.pop('username', None)
-    return redirect(url_for('displayLoginPage'))
+    return redirect(url_for('displayIndexPage'))
 
 # ================= DATABASE ==================
-def getUserPassword(username,password):
+def getUserPasswordDB(username,password):
     con = sql.connect(DATABASE_PATH)
     cur = con.cursor()
     reponse = cur.execute("SELECT * FROM user WHERE username like ? and passwordUser like ?;",[username,password]).fetchone()
@@ -125,15 +211,63 @@ def getUserPassword(username,password):
     
     return reponse
 
-def addUserPassword(username,password,nickname):
+def addUserPasswordDB(username,password,nickname):
     con = sql.connect(DATABASE_PATH)
     cur = con.cursor()
-    print('username,password,nickname')
-    print(username,password,nickname)
-    reponse = cur.execute('INSERT INTO user (username, passwordUser, nickname, type_user) VALUES (?, ?, ?, 1);',[username,password,nickname]).fetchone()
+    cur.execute('INSERT INTO user (username, passwordUser, nickname, type_user) VALUES (?, ?, ?, 1);',[username,password,nickname]).fetchone()
+    con.commit()
+    con.close()
+    
+    
+def getEventsByUserDB(idUser):
+    con = sql.connect(DATABASE_PATH)
+    cur = con.cursor()
+    reponse = cur.execute("SELECT * FROM events WHERE createdBy=? ORDER BY dateevents DESC;",[idUser]).fetchall()
+    con.close()
+    
+    return reponse
+
+def getEventByIdDB(id):
+    con = sql.connect(DATABASE_PATH)
+    cur = con.cursor()
+    reponse = cur.execute("SELECT * FROM events WHERE id=?;",[id]).fetchone()
+    con.close()
+    
+    return reponse
+
+
+def delEventByIdDB(id):
+    con = sql.connect(DATABASE_PATH)
+    cur = con.cursor()
+    reponse = cur.execute("DELETE FROM events WHERE id = ?;",[id]).fetchone()
     con.commit()
     con.close()
     
     return reponse
 
 
+def updateEventByIdDB(id,name,desc,date):
+    con = sql.connect(DATABASE_PATH)
+    cur = con.cursor()
+    reponse = cur.execute("UPDATE events SET name =  ?, description = ? , dateevents = ? WHERE id=?;",[name,desc,date,id]).fetchone()
+    con.commit()
+    con.close()
+    
+    return reponse
+
+def getEventDB(name,desc,date,who):
+    con = sql.connect(DATABASE_PATH)
+    cur = con.cursor()
+    reponse = cur.execute("SELECT * from events WHERE name=? and description=? and dateevents=? and createdBy = ?;",[name,desc,date,who]).fetchone()
+    con.close()
+    
+    return reponse
+
+def addEventDB(name,desc,date,who):
+    con = sql.connect(DATABASE_PATH)
+    cur = con.cursor()
+    cur.execute('INSERT INTO events (name, description, dateevents, createdBy) VALUES ( ?, ?, ?, ?);',[name,desc,date,who]).fetchone()
+    con.commit()
+    con.close()
+
+    

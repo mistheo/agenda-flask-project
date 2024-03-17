@@ -42,7 +42,6 @@
       padding: 10px;
       margin-bottom: 20px;
       border: 1px solid #444;
-      /* Darker border color */
       border-radius: 4px;
       background-color: #444;
       /* Darker input background */
@@ -63,25 +62,25 @@
 
     .login-container input[type="submit"]:hover {
       background-color: #0056b3;
-      /* Button hover color */
     }
 
     .error-message {
       color: #ff0000;
       margin-top: 10px;
-    }*
-    
-    .flex {
+    }
+
+    * .flex {
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    
-    .flex-submit {
+
+    .flex-between {
       display: flex;
       align-items: center;
-      justify-content:space-between;
+      align-content: center;
+      justify-content: stretch;
     }
 
     .invert {
@@ -92,27 +91,27 @@
 
 <body>
   <div class="login-container">
-    <div class="flex">
+    <div class="flex-between">
+      <a href="/">
+        <svg class="invert" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+          <path d="M400-80 0-480l400-400 71 71-329 329 329 329-71 71Z" />
+        </svg>
+      </a>
       <h2>Login</h2>
     </div>
     {% if failToLog %}
-    <div class="error-message">Votre mot de passe ou votre identifiant est erroné</div>
+      <div class="error-message">Votre mot de passe ou votre identifiant est erroné</div>
     {% endif %}
 
     <br>
     <form autocomplete="off" action="/connect" method="post">
-      <input type="text" name="username" placeholder="Username" required>
+      <input type="text" name="username" placeholder="Nom d'Utilisateur" required>
       <br>
-      <input type="password" name="password" placeholder="Password" required>
+      
+      <input type="password" name="password" placeholder="Mot de passe" required>
       <br>
-      <div class="flex-submit">
-        <a href="/">
-          <svg class="invert" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
-            <path d="M400-80 0-480l400-400 71 71-329 329 329 329-71 71Z" />
-          </svg>
-        </a>
+      
         <input type="submit" value="Login">
-      </div>
     </form>
   </div>
 </body>

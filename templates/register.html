@@ -52,7 +52,6 @@
 
     .register-container input[type="submit"] {
       background-color: #28a745;
-      /* Button color */
       color: #fff;
       border: none;
       padding: 10px 20px;
@@ -63,7 +62,6 @@
 
     .register-container input[type="submit"]:hover {
       background-color: #218838;
-      /* Button hover color */
     }
 
     .error-message {
@@ -77,47 +75,54 @@
       justify-content: center;
     }
 
-    .flex-sbumit {
+    .flex-between {
       display: flex;
+      align-items: center;
       align-content: center;
-      justify-content: space-between;
+      justify-content: stretch;
     }
 
     .invert {
       filter: invert(1);
     }
+    
   </style>
 </head>
 
 <body>
   <div class="register-container">
-    <div class="flex">
+    <div class="flex-between">
+      <a href="/">
+        <a href="/">
+          <svg class="invert" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+            <path d="M400-80 0-480l400-400 71 71-329 329 329 329-71 71Z" />
+          </svg>
+        </a>
+      </a>
       <h2>Register</h2>
     </div>
 
-    {% if errorMsg %}
+    {% if request.args.get('errorMsg', '') %}
     <div class="error-message">
       {{errorMsg}}
     </div>
     {% endif %}
-  
+
     <br>
     <form autocomplete="off" action="/register/new" method="post">
-      <input type="text" name="username" placeholder="Username" required>
+      <input type="text" name="username" placeholder="Nom d'Utilisateur"  required>
       <br>
-      <input type="text" name="nickname" placeholder="Nickname">
+
+      <input type="text" name="nickname" placeholder="Pseudo (facultatif)">
       <br>
-      <input type="password" name="password" placeholder="Password" required>
+      
+      <input type="password" name="password" placeholder="Mot de Passe" required>
       <br>
-      <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+      
+      <input type="password" name="confirm_password" placeholder="Confirmation Mot de Passe" required>
       <br>
-      <br>
-      <div class="flex-submit">
-        <a href="/">
-          <svg class="invert" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M400-80 0-480l400-400 71 71-329 329 329 329-71 71Z" /></svg>
-        </a>
-        <input type="submit" value="S'Enregistrer">
-      </div>
+      
+      <input type="submit" value="S'enregistrer">
     </form>
   </div>
 </body>

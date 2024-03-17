@@ -7,8 +7,13 @@
     <title>Agenda</title>
     <script src="./static/js/main.js" defer></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Gabarito:wght@400&display=swap');
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: "Gabarito", sans-serif;
+            font-optical-sizing: auto;
+            font-style: normal;
+
             background-color: #f0f0f0;
             margin: 0;
             padding: 0;
@@ -109,6 +114,38 @@
             filter: invert(1);
         }
 
+        input.modify-submit {
+            background-color: rgb(100, 169, 100);
+        }
+
+        input.modify-submit:hover {
+            background-color:rgb(123, 192, 123) ;
+        }
+
+        .error-message {
+            color: #ff0000;
+            margin-top: 10px;
+        }
+
+        .suppr {
+            background-color: rgb(174, 55, 55);
+            border: none;
+            padding: 9px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            &:hover {
+                background-color: rgb(110, 17, 17);
+            }
+        }
+
+        
+
+        form * {
+            margin-top: 5px;
+        }
     </style>
 </head>
 
@@ -120,39 +157,69 @@
                     d="M190-58q-37.175 0-64.088-27.612Q99-113.225 99-149v-601q0-37.588 26.912-64.794Q152.825-842 190-842h59v-61h79v61h304v-61h79v61h59q37.588 0 64.794 27.206Q862-787.588 862-750v601q0 35.775-27.206 63.388Q807.588-58 770-58H190Zm0-91h580v-419H190v419Zm0-476h580v-125H190v125Zm0 0v-125 125Zm290.404 230q-18.822 0-32.113-13.177T435-439.877q0-18.523 13.379-31.823t32.2-13.3q18.821 0 31.621 13.177 12.8 13.177 12.8 31.7T512.112-408.3Q499.225-395 480.404-395Zm-160.281 0q-18.523 0-31.823-13.177t-13.3-31.7q0-18.523 13.177-31.823t31.7-13.3q18.523 0 31.823 13.177t13.3 31.7q0 18.523-13.177 31.823t-31.7 13.3Zm319.298 0Q622-395 608.5-408.177t-13.5-31.7q0-18.523 13.588-31.823 13.587-13.3 31.508-13.3 17.922 0 31.413 13.177t13.491 31.7q0 18.523-13.379 31.823t-32.2 13.3ZM480.404-235q-18.822 0-32.113-13.588Q435-262.175 435-280.096q0-17.922 13.379-31.413t32.2-13.491q18.821 0 31.621 13.379 12.8 13.379 12.8 32.2Q525-262 512.112-248.5 499.225-235 480.404-235Zm-160.281 0q-18.523 0-31.823-13.588-13.3-13.587-13.3-31.508 0-17.922 13.177-31.413t31.7-13.491q18.523 0 31.823 13.379t13.3 32.2Q365-262 351.823-248.5t-31.7 13.5Zm319.298 0Q622-235 608.5-248.588 595-262.175 595-280.096q0-17.922 13.588-31.413Q622.175-325 640.096-325q17.922 0 31.413 13.379t13.491 32.2Q685-262 671.621-248.5t-32.2 13.5Z" />
             </svg>
         </a>
+
         <h1>Agenda de {{nickname}}</h1>
-        <a href="/disconnect">
-            <svg class="invert" xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" width="35">
-                <path
-                    d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z" />
-            </svg>
-        </a>
+
+        <div>
+            <a href="/">
+                <svg class="invert" xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" width="35">
+                    <path
+                        d="M234-276q51-39 114-61.5T480-360q69 0 132 22.5T726-276q35-41 54.5-93T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 59 19.5 111t54.5 93Zm246-164q-59 0-99.5-40.5T340-580q0-59 40.5-99.5T480-720q59 0 99.5 40.5T620-580q0 59-40.5 99.5T480-440Zm0 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q53 0 100-15.5t86-44.5q-39-29-86-44.5T480-280q-53 0-100 15.5T294-220q39 29 86 44.5T480-160Zm0-360q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Zm0-60Zm0 360Z" />
+                </svg>
+            </a>
+            <a href="/disconnect">
+                <svg class="invert" xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" width="35">
+                    <path
+                        d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z" />
+                </svg>
+            </a>
+        </div>
     </header>
 
 
     <section id="add-date">
-        <h2>Ajout d'une Date</h2>
-        <form action="/monagenda/adddate" method="post">
+
+        {% if errorMsg %}
+        <div class="error-message">
+            {{errorMsg}}
+        </div>
+        {% endif %}
+
+        {% if eventMode == "M" %}
+        <h2>Modification d'un evenement</h2>
+        {% else %}
+        <h2>Ajout d'un evenement</h2>
+        {% endif %}
+        
+        <form action="{{urlPost}}" method="post">
             <div class="form-flex">
                 <label for="event-name">Nom de l'événement:</label>
-                <input type="text" id="event-name" name="event-name" required>
+                <input type="text" id="event-name" name="event-name" value="{{eventName}}" required>
             </div>
 
             <div class="form-flex">
                 <label for="event-date">Date de l'événement:</label>
-                <input type="date" id="event-date" name="event-date" required>
-            </div>
-            
-            <div class="form-flex">
-                <label for="event-who">Avec Qui ?</label>
-                <select type="combo" id="event-who" name="event-who">
-                    <option>un</option>
-                    <option>deux</option>
-                    <option>trois</option>
-                </select>
+                
+                {% if eventMode == "M" %}
+                <input type="date" id="event-date" name="event-date" value="{{eventDate}}" min="{{today}}" required>
+                {% else %}
+                <input type="date" id="event-date" name="event-date" min="{{today}}" value="{{today}}" required>
+                {% endif %}
+                
             </div>
 
+            <div class="form-flex">
+                <label for="event-desc">Description de l'événement:</label>
+                <input type="text" id="event-desc" name="event-desc" value="{{eventDesc}}">
+            </div>
+
+            {% if eventMode == "M" %}
+            <input type="submit" class="modify-submit" value="Modifier">
+            <a class="suppr" href="/monagenda/event/delete/{{idEvent}}">X</a>
+            {% else %}
             <input type="submit" value="Ajouter">
+            {% endif %}
+
         </form>
     </section>
 
